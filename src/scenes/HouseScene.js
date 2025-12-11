@@ -141,10 +141,10 @@ export default class HouseScene extends Phaser.Scene {
     this.furnitureColliders.create(68, 1037, null).setSize(100, 100).setVisible(false).refreshBody();
     this.furnitureColliders.create(68, 1262, null).setSize(100, 100).setVisible(false).refreshBody();
 
-    // Cat bowl colliders (60px radius = ~120x120 box)
-    this.furnitureColliders.create(771, 116, null).setSize(80, 80).setVisible(false).refreshBody();
-    this.furnitureColliders.create(1676, 698, null).setSize(80, 80).setVisible(false).refreshBody();
-    this.furnitureColliders.create(896, 1303, null).setSize(80, 80).setVisible(false).refreshBody();
+    // Cat bowl colliders (300x300 box)
+    this.furnitureColliders.create(771, 116, null).setSize(300, 300).setVisible(false).refreshBody();
+    this.furnitureColliders.create(1676, 698, null).setSize(300, 300).setVisible(false).refreshBody();
+    this.furnitureColliders.create(896, 1303, null).setSize(300, 300).setVisible(false).refreshBody();
   }
 
   createProps() {
