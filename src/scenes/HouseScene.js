@@ -145,6 +145,9 @@ export default class HouseScene extends Phaser.Scene {
     this.furnitureColliders.create(771, 116, null).setSize(300, 300).setVisible(false).refreshBody();
     this.furnitureColliders.create(1676, 698, null).setSize(300, 300).setVisible(false).refreshBody();
     this.furnitureColliders.create(896, 1303, null).setSize(300, 300).setVisible(false).refreshBody();
+
+    // Bed collider (large furniture piece)
+    this.furnitureColliders.create(261, 244, null).setSize(200, 180).setVisible(false).refreshBody();
   }
 
   createProps() {
