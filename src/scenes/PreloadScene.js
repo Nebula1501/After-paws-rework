@@ -34,9 +34,12 @@ export default class PreloadScene extends Phaser.Scene {
 
     // Load room furniture
     this.load.image('bedroomItems', 'assets/bedroom items.png');
-    this.load.image('kitchenItems', 'assets/kitchen items.png');
+    this.load.image('kitchenItems', 'assets/kitchen Items.png');
     this.load.image('livingRoomItems', 'assets/living_room items.png');
     this.load.image('bathroomItems', 'assets/bathroom items.png');
+
+    // Load separate fridge (interactive)
+    this.load.image('fridge', 'assets/FRIDGE.png');
 
     // Load props and clutter
     this.load.image('chips', 'assets/chips.png');

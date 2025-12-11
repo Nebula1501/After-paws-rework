@@ -5,8 +5,12 @@ export default class InteractionManager {
   }
 
   checkInteraction(cat, owner) {
+    // DEBUG: Show interaction attempt
+    console.log(`[Interaction] E pressed at cat position: (${Math.round(cat.x)}, ${Math.round(cat.y)})`);
+
     // Don't allow interaction if owner is busy or if in distraction state
     if (this.scene.ownerState === 'walking' || this.scene.ownerState === 'cleaning') {
+      console.log('[Interaction] Owner is busy, cannot interact');
       return;
     }
 
@@ -17,44 +21,13 @@ export default class InteractionManager {
       return;
     }
 
-    // Check distance to each interactable prop
-    const taskManager = this.scene.taskManager;
-    const props = this.scene.interactableProps;
+    // TEMPORARY: Show a message that interaction is working
+    this.showInteractionMessage('E key works! Waiting for task positions...');
 
-    for (let key in props) {
-      const prop = props[key];
-      if (!prop || !prop.visible) continue;
+    // TODO: Once you provide object positions, we'll check actual distances
+    // For now, interaction system needs object coordinates from your collider map
 
-      const distance = Phaser.Math.Distance.Between(cat.x, cat.y, prop.x, prop.y);
-
-      if (distance < this.interactionRadius) {
-        // Check if this prop is associated with a task
-        const task = taskManager.getTaskByItemKey(key);
-
-        if (task) {
-          // Trigger the task
-          this.triggerTask(task, owner);
-          return;
-        }
-      }
-    }
-
-    // Also check dirt sprites (they might not be in interactableProps)
-    const dirtSprites = this.scene.dirtSprites;
-    for (let key in dirtSprites) {
-      const dirt = dirtSprites[key];
-      if (!dirt || !dirt.visible) continue;
-
-      const distance = Phaser.Math.Distance.Between(cat.x, cat.y, dirt.x, dirt.y);
-
-      if (distance < this.interactionRadius) {
-        const task = taskManager.getTaskByItemKey(key);
-        if (task) {
-          this.triggerTask(task, owner);
-          return;
-        }
-      }
-    }
+    console.log('[Interaction] Ready for task interaction - need object positions');
   }
 
   triggerTask(task, owner) {
