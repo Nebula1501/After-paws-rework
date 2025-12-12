@@ -17,7 +17,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 }, // Top-down game, no gravity
-            debug: true // Enable debug mode to see colliders
+            debug: false // Disable debug mode
         }
     },
     scene: [

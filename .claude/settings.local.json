@@ -6,7 +6,8 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nAdd ending sequence images, background music, and updated credits\n\n- Added end_01, end_02, end_03 webp images for ending sequence\n- Implemented new Phase 5 with image transitions before final fade\n- Added background music with fade in/out effects\n- Updated credits with team names (Swara, Samyak, Tanisha, Ababil)\n- Music plays throughout game and fades out during ending\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git config:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git commit:*)"
     ]
   }
 }
