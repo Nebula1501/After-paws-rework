@@ -132,9 +132,11 @@ export default class EndingManager {
 
   phase5_VisualCollapse() {
     // Phase 10.5: Visual Collapse (Symbolic, Safe)
-    // Colors desaturate, room darkens, owner dissolves
+    // Show ending sequence images, then fade everything away
 
     const owner = this.scene.owner;
+    const width = this.scene.cameras.main.width;
+    const height = this.scene.cameras.main.height;
 
     // Desaturate colors using tint (grayscale effect)
     const allSprites = [
@@ -171,18 +173,144 @@ export default class EndingManager {
       targets: this.collapseOverlay,
       alpha: 0.8,
       duration: 4000,
-      ease: 'Power2'
-    });
-
-    // Owner silhouette dissolves
-    this.scene.tweens.add({
-      targets: owner,
-      alpha: 0,
-      scale: 0.8,
-      duration: 4000,
       ease: 'Power2',
       onComplete: () => {
-        this.phase6_FinalText();
+        // Show ending image sequence
+        this.showEndingImageSequence();
+      }
+    });
+  }
+
+  showEndingImageSequence() {
+    const width = this.scene.cameras.main.width;
+    const height = this.scene.cameras.main.height;
+    const centerX = this.scene.cameras.main.scrollX + width / 2;
+    const centerY = this.scene.cameras.main.scrollY + height / 2;
+
+    // Create end_01 image
+    const end01 = this.scene.add.image(centerX, centerY, 'end_01');
+    end01.setOrigin(0.5, 0.5);
+    end01.setDepth(90);
+    end01.setScrollFactor(0);
+    end01.setAlpha(0);
+    end01.setScale(Math.min(width / end01.width, height / end01.height));
+
+    // Fade in end_01
+    this.scene.tweens.add({
+      targets: end01,
+      alpha: 1,
+      duration: 2000,
+      ease: 'Power2',
+      onComplete: () => {
+        // Wait, then transition to end_02
+        this.scene.time.delayedCall(2000, () => {
+          this.transitionToImage(end01, 'end_02', () => {
+            // Transition to end_03
+            this.scene.time.delayedCall(2000, () => {
+              const end02 = this.scene.children.getByName('currentEndImage');
+              this.transitionToImage(end02, 'end_03', () => {
+                // Fade out end_03 and show game scene without owner
+                this.scene.time.delayedCall(2000, () => {
+                  this.fadeBackToSceneWithoutOwner();
+                });
+              });
+            });
+          });
+        });
+      }
+    });
+  }
+
+  transitionToImage(currentImage, nextImageKey, onComplete) {
+    const width = this.scene.cameras.main.width;
+    const height = this.scene.cameras.main.height;
+    const centerX = this.scene.cameras.main.scrollX + width / 2;
+    const centerY = this.scene.cameras.main.scrollY + height / 2;
+
+    // Create next image
+    const nextImage = this.scene.add.image(centerX, centerY, nextImageKey);
+    nextImage.setOrigin(0.5, 0.5);
+    nextImage.setDepth(90);
+    nextImage.setScrollFactor(0);
+    nextImage.setAlpha(0);
+    nextImage.setScale(Math.min(width / nextImage.width, height / nextImage.height));
+    nextImage.setName('currentEndImage');
+
+    // Cross-fade
+    this.scene.tweens.add({
+      targets: currentImage,
+      alpha: 0,
+      duration: 1500,
+      ease: 'Power2',
+      onComplete: () => {
+        currentImage.destroy();
+      }
+    });
+
+    this.scene.tweens.add({
+      targets: nextImage,
+      alpha: 1,
+      duration: 1500,
+      ease: 'Power2',
+      onComplete: onComplete
+    });
+  }
+
+  fadeBackToSceneWithoutOwner() {
+    const currentImage = this.scene.children.getByName('currentEndImage');
+
+    // Hide owner
+    this.scene.owner.setAlpha(0);
+
+    // Fade out the ending image
+    this.scene.tweens.add({
+      targets: currentImage,
+      alpha: 0,
+      duration: 2000,
+      ease: 'Power2',
+      onComplete: () => {
+        currentImage.destroy();
+
+        // Fade out the dark overlay
+        this.scene.tweens.add({
+          targets: this.collapseOverlay,
+          alpha: 0,
+          duration: 2000,
+          ease: 'Power2'
+        });
+
+        // Now fade everything else out
+        const allSprites = [
+          this.scene.floorWood,
+          this.scene.bathroomTile,
+          this.scene.walls,
+          this.scene.bedroomItems,
+          this.scene.kitchenItems,
+          this.scene.livingRoomItems,
+          this.scene.bathroomItems,
+          this.scene.bedNeat,
+          this.scene.cat
+        ];
+
+        this.scene.tweens.add({
+          targets: allSprites,
+          alpha: 0,
+          duration: 3000,
+          ease: 'Power2',
+          onComplete: () => {
+            // Fade out music
+            this.scene.tweens.add({
+              targets: this.scene.bgMusic,
+              volume: 0,
+              duration: 3000,
+              ease: 'Power2',
+              onComplete: () => {
+                this.scene.bgMusic.stop();
+                this.phase6_FinalText();
+              }
+            });
+          }
+        });
       }
     });
   }
@@ -245,7 +373,7 @@ export default class EndingManager {
     const creditsText = this.scene.add.text(
       this.scene.cameras.main.scrollX + width / 2,
       this.scene.cameras.main.scrollY + height / 2 + 100,
-      'After Paws\n\nA game about love, loss, and the fragility of healing.\n\n\nPress SPACE to restart',
+      'After Paws\n\nA game about love, loss, and the fragility of healing.\n\n\nSwara - Character Artist\nSamyak - Environment Artist\nTanisha - Developer\nAbabil - Instructor\n\n\nPress SPACE to restart',
       {
         font: '18px Arial',
         fill: '#888888',

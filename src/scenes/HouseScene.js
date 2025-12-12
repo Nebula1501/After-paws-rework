@@ -60,6 +60,21 @@ export default class HouseScene extends Phaser.Scene {
       repeat: -1,
       ease: 'Sine.easeInOut'
     });
+
+    // Start background music with fade in
+    this.bgMusic = this.sound.add('bgMusic', {
+      loop: true,
+      volume: 0
+    });
+    this.bgMusic.play();
+
+    // Fade in music over 3 seconds
+    this.tweens.add({
+      targets: this.bgMusic,
+      volume: 0.5,
+      duration: 3000,
+      ease: 'Power2'
+    });
   }
 
   createFloors() {

@@ -64,6 +64,14 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('catBack', 'assets/cat_back.png');
     this.load.image('humanFront', 'assets/Human_front.png');
     this.load.image('humanBack', 'assets/Human_back.png');
+
+    // Load ending sequence images
+    this.load.image('end_01', 'assets/end_01.webp');
+    this.load.image('end_02', 'assets/end_02.webp');
+    this.load.image('end_03', 'assets/end_03.webp');
+
+    // Load background music
+    this.load.audio('bgMusic', 'music/happy-relaxing-loop-275536.mp3');
   }
 
   create() {
