@@ -31,9 +31,6 @@ export default class HouseScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, 2360, 1640);
     this.cameras.main.setZoom(1);
 
-    // Debug: Add grid overlay and coordinate display
-    this.createDebugOverlay();
-
     // Setup input
     this.cursors = this.input.keyboard.createCursorKeys();
     this.wasd = {
@@ -340,75 +337,10 @@ export default class HouseScene extends Phaser.Scene {
     this.playerCanMove = canMove;
   }
 
-  // Debug overlay with grid and coordinates
-  createDebugOverlay() {
-    // Create graphics for grid
-    this.debugGraphics = this.add.graphics();
-    this.debugGraphics.setDepth(1000);
-
-    // Draw grid lines every 100 pixels
-    this.debugGraphics.lineStyle(1, 0x00ff00, 0.3);
-
-    // Vertical lines
-    for (let x = 0; x <= 2360; x += 100) {
-      this.debugGraphics.lineBetween(x, 0, x, 1640);
-    }
-
-    // Horizontal lines
-    for (let y = 0; y <= 1640; y += 100) {
-      this.debugGraphics.lineBetween(0, y, 2360, y);
-    }
-
-    // Add thicker lines every 500 pixels
-    this.debugGraphics.lineStyle(2, 0xff0000, 0.5);
-    for (let x = 0; x <= 2360; x += 500) {
-      this.debugGraphics.lineBetween(x, 0, x, 1640);
-    }
-    for (let y = 0; y <= 1640; y += 500) {
-      this.debugGraphics.lineBetween(0, y, 2360, y);
-    }
-
-    // Create coordinate display text (fixed to camera)
-    this.debugCoordText = this.add.text(10, 10, '', {
-      font: 'bold 16px monospace',
-      fill: '#00ff00',
-      backgroundColor: '#000000',
-      padding: { x: 8, y: 4 }
-    });
-    this.debugCoordText.setScrollFactor(0);
-    this.debugCoordText.setDepth(2000);
-
-    // Create owner coordinate display
-    this.debugOwnerText = this.add.text(10, 40, '', {
-      font: 'bold 16px monospace',
-      fill: '#ffaa00',
-      backgroundColor: '#000000',
-      padding: { x: 8, y: 4 }
-    });
-    this.debugOwnerText.setScrollFactor(0);
-    this.debugOwnerText.setDepth(2000);
-
-    // Create world info display
-    this.debugWorldText = this.add.text(10, 70, 'World: 2360x1640 | Canvas from Photoshop', {
-      font: 'bold 14px monospace',
-      fill: '#ffffff',
-      backgroundColor: '#000000',
-      padding: { x: 8, y: 4 }
-    });
-    this.debugWorldText.setScrollFactor(0);
-    this.debugWorldText.setDepth(2000);
-  }
 
   update() {
     if (!this.playerCanMove) {
       this.cat.setVelocity(0, 0);
-
-      // Update debug display even when paused
-      if (this.debugCoordText) {
-        this.debugCoordText.setText(`Cat: (${Math.round(this.cat.x)}, ${Math.round(this.cat.y)})`);
-        this.debugOwnerText.setText(`Owner: (${Math.round(this.owner.x)}, ${Math.round(this.owner.y)})`);
-      }
-
       return;
     }
 
@@ -428,11 +360,5 @@ export default class HouseScene extends Phaser.Scene {
 
     // Update distraction manager
     this.distractionManager.update(this.owner);
-
-    // Update debug coordinate display
-    if (this.debugCoordText) {
-      this.debugCoordText.setText(`Cat: (${Math.round(this.cat.x)}, ${Math.round(this.cat.y)})`);
-      this.debugOwnerText.setText(`Owner: (${Math.round(this.owner.x)}, ${Math.round(this.owner.y)})`);
-    }
   }
 }

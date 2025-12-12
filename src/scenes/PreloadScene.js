@@ -72,10 +72,13 @@ export default class PreloadScene extends Phaser.Scene {
 
     // Load background music
     this.load.audio('bgMusic', 'music/happy-relaxing-loop-275536.mp3');
+
+    // Load logo
+    this.load.image('logo', 'assets/Gemini_Generated_Image_o910flo910flo910.png');
   }
 
   create() {
-    // Transition to intro scene
-    this.scene.start('IntroScene');
+    // Transition to logo scene first
+    this.scene.start('LogoScene');
   }
 }

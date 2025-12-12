@@ -1,4 +1,5 @@
 import PreloadScene from './scenes/PreloadScene.js';
+import LogoScene from './scenes/LogoScene.js';
 import IntroScene from './scenes/IntroScene.js';
 import HouseScene from './scenes/HouseScene.js';
 import UIScene from './scenes/UIScene.js';
@@ -21,6 +22,7 @@ const config = {
     },
     scene: [
         PreloadScene,
+        LogoScene,
         IntroScene,
         HouseScene,
         UIScene
