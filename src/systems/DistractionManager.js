@@ -50,8 +50,7 @@ export default class DistractionManager {
     const owner = this.scene.owner;
 
     // Stop owner movement
-    this.scene.tweens.killTweensOf(owner);
-    owner.setVelocity(0, 0);
+    this.scene.stopOwnerMovement();
     this.scene.ownerState = 'distracted';
 
     // Visual effects: dim colors, head lower (simulate with tint/alpha)

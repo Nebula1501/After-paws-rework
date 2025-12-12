@@ -101,55 +101,11 @@ export default class HouseScene extends Phaser.Scene {
     // Fridge (separate interactive sprite)
     this.fridge = this.add.image(0, 0, 'fridge').setOrigin(0, 0).setDepth(22);
 
-    // Furniture colliders based on interactive object positions
+    // Furniture colliders - empty for now, need proper positions
     this.furnitureColliders = this.physics.add.staticGroup();
 
-    // All colliders set to 500x500
-
-    // Fridge collider
-    this.furnitureColliders.create(1454, 765, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Books colliders
-    this.furnitureColliders.create(771, 319, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(669, 159, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Wardrobe collider
-    this.furnitureColliders.create(564, 29, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Chair colliders
-    this.furnitureColliders.create(1046, 283, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(1351, 73, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(2037, 104, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Table colliders
-    this.furnitureColliders.create(1351, 290, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(1216, 1038, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Boxes colliders
-    this.furnitureColliders.create(1857, 285, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(1717, 195, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Stove colliders
-    this.furnitureColliders.create(1216, 725, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(846, 913, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Bathtub collider
-    this.furnitureColliders.create(496, 896, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Toilet collider
-    this.furnitureColliders.create(152, 705, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Washing machine colliders
-    this.furnitureColliders.create(68, 1037, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(68, 1262, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Cat bowl colliders
-    this.furnitureColliders.create(771, 116, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(1676, 698, null).setSize(500, 500).setVisible(false).refreshBody();
-    this.furnitureColliders.create(896, 1303, null).setSize(500, 500).setVisible(false).refreshBody();
-
-    // Bed collider
-    this.furnitureColliders.create(261, 244, null).setSize(500, 500).setVisible(false).refreshBody();
+    // TODO: Add colliders based on actual sprite positions
+    // For now, removed all placeholder colliders since they were incorrectly positioned
   }
 
   createProps() {
@@ -215,6 +171,11 @@ export default class HouseScene extends Phaser.Scene {
     // Owner state
     this.ownerState = 'idle'; // idle, walking, cleaning, distracted
     this.ownerCurrentTask = null;
+
+    // Owner movement target (for physics-based pathfinding)
+    this.ownerTarget = null;
+    this.ownerMoveCallback = null;
+    this.ownerSpeed = 100;
 
     // Setup collisions - ONLY OWNER collides with walls/furniture, cat is a ghost!
     this.physics.add.collider(this.owner, this.wallColliders);
@@ -297,33 +258,66 @@ export default class HouseScene extends Phaser.Scene {
     }
   }
 
-  // Helper method to move owner to a location
+  // Helper method to move owner to a location using physics-based movement
   moveOwnerToLocation(x, y, onComplete) {
     this.ownerState = 'walking';
+    this.ownerTarget = { x, y };
+    this.ownerMoveCallback = onComplete;
+  }
 
-    const distance = Phaser.Math.Distance.Between(this.owner.x, this.owner.y, x, y);
-    const duration = (distance / 100) * 1000; // Adjust speed as needed
-
-    // Determine sprite based on direction
-    if (y < this.owner.y) {
-      this.owner.setTexture('humanBack');
-    } else {
-      this.owner.setTexture('humanFront');
+  // Update owner movement towards target (called in update loop)
+  updateOwnerMovement() {
+    if (!this.ownerTarget || this.ownerState !== 'walking') {
+      return;
     }
 
-    this.tweens.add({
-      targets: this.owner,
-      x: x,
-      y: y,
-      duration: duration,
-      ease: 'Linear',
-      onComplete: () => {
-        this.ownerState = 'cleaning';
-        if (onComplete) {
-          onComplete();
-        }
+    const { x: targetX, y: targetY } = this.ownerTarget;
+    const distance = Phaser.Math.Distance.Between(this.owner.x, this.owner.y, targetX, targetY);
+    const arrivalThreshold = 10;
+
+    // Check if owner has arrived
+    if (distance < arrivalThreshold) {
+      this.owner.setVelocity(0, 0);
+      this.ownerTarget = null;
+      this.ownerState = 'cleaning';
+
+      if (this.ownerMoveCallback) {
+        const callback = this.ownerMoveCallback;
+        this.ownerMoveCallback = null;
+        callback();
       }
-    });
+      return;
+    }
+
+    // Calculate direction to target
+    const angle = Phaser.Math.Angle.Between(this.owner.x, this.owner.y, targetX, targetY);
+    const velocityX = Math.cos(angle) * this.ownerSpeed;
+    const velocityY = Math.sin(angle) * this.ownerSpeed;
+
+    // Apply velocity
+    this.owner.setVelocity(velocityX, velocityY);
+
+    // Update sprite based on movement direction
+    if (Math.abs(velocityY) > Math.abs(velocityX)) {
+      // Vertical movement dominant
+      if (velocityY < 0) {
+        this.owner.setTexture('humanBack');
+      } else {
+        this.owner.setTexture('humanFront');
+      }
+      this.owner.setFlipX(false);
+    } else {
+      // Horizontal movement dominant
+      this.owner.setTexture('humanFront');
+      this.owner.setFlipX(velocityX < 0);
+    }
+  }
+
+  // Stop owner movement (used when distracted or interrupted)
+  stopOwnerMovement() {
+    this.owner.setVelocity(0, 0);
+    this.ownerTarget = null;
+    this.ownerMoveCallback = null;
   }
 
   // Method to lock/unlock player movement
@@ -405,6 +399,9 @@ export default class HouseScene extends Phaser.Scene {
 
     // Cat movement
     this.handleCatMovement();
+
+    // Owner physics-based movement
+    this.updateOwnerMovement();
 
     // Check fridge interaction (SPACE key)
     this.checkFridgeInteraction();
