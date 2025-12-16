@@ -347,31 +347,23 @@ export default class EndingManager {
     finalTextImage.setOrigin(0.5, 0.5);
     finalTextImage.setScrollFactor(0); // Fixed to camera
     finalTextImage.setDepth(6000); // High depth for final screen
-    finalTextImage.setAlpha(0);
+    finalTextImage.setAlpha(1); // Start visible
     finalTextImage.setDisplaySize(width, height); // Fit to canvas size
 
-    // Fade in final text image
-    this.scene.tweens.add({
-      targets: finalTextImage,
-      alpha: 1,
-      duration: 3000,
-      ease: 'Power2',
-      onComplete: () => {
-        // Wait, then show credits
-        this.scene.time.delayedCall(4000, () => {
-          // Fade out final text
-          this.scene.tweens.add({
-            targets: finalTextImage,
-            alpha: 0,
-            duration: 1500,
-            ease: 'Power2',
-            onComplete: () => {
-              finalTextImage.destroy();
-              this.showCredits();
-            }
-          });
+    // Fade camera back in to show the final text image
+    this.scene.cameras.main.fadeIn(2000, 0, 0, 0);
+
+    this.scene.cameras.main.once('camerafadeincomplete', () => {
+      // Wait, then show credits
+      this.scene.time.delayedCall(4000, () => {
+        // Fade camera to black
+        this.scene.cameras.main.fadeOut(1500, 0, 0, 0);
+
+        this.scene.cameras.main.once('camerafadeoutcomplete', () => {
+          finalTextImage.destroy();
+          this.showCredits();
         });
-      }
+      });
     });
   }
 
@@ -384,15 +376,11 @@ export default class EndingManager {
     creditsImage.setOrigin(0.5, 0.5);
     creditsImage.setScrollFactor(0); // Fixed to camera
     creditsImage.setDepth(6000); // High depth for final screen
-    creditsImage.setAlpha(0);
+    creditsImage.setAlpha(1); // Start visible
     creditsImage.setDisplaySize(width, height); // Fit to canvas size
 
-    this.scene.tweens.add({
-      targets: creditsImage,
-      alpha: 1,
-      duration: 2000,
-      ease: 'Power2'
-    });
+    // Fade camera back in to show credits
+    this.scene.cameras.main.fadeIn(2000, 0, 0, 0);
 
     // Allow restart
     this.scene.input.keyboard.once('keydown-SPACE', () => {
