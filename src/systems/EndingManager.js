@@ -167,7 +167,7 @@ export default class EndingManager {
       0x000000,
       0
     );
-    this.collapseOverlay.setDepth(80);
+    this.collapseOverlay.setDepth(4000); // Below ending images (5000) but above game elements
 
     this.scene.tweens.add({
       targets: this.collapseOverlay,
@@ -182,18 +182,22 @@ export default class EndingManager {
   }
 
   showEndingImageSequence() {
+    // Hide UI controls during ending
+    const uiScene = this.scene.scene.get('UIScene');
+    if (uiScene && uiScene.controlsContainer) {
+      uiScene.controlsContainer.setVisible(false);
+    }
+
+    // Images are full-canvas sized and fixed to camera
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
-    const centerX = this.scene.cameras.main.scrollX + width / 2;
-    const centerY = this.scene.cameras.main.scrollY + height / 2;
 
-    // Create end_01 image
-    const end01 = this.scene.add.image(centerX, centerY, 'end_01');
+    const end01 = this.scene.add.image(width / 2, height / 2, 'end_01');
     end01.setOrigin(0.5, 0.5);
-    end01.setDepth(90);
-    end01.setScrollFactor(0);
+    end01.setScrollFactor(0); // Fixed to camera
+    end01.setDepth(5000); // Very high depth to be above everything
     end01.setAlpha(0);
-    end01.setScale(Math.min(width / end01.width, height / end01.height));
+    end01.setDisplaySize(width, height); // Fit to canvas size
 
     // Fade in end_01
     this.scene.tweens.add({
@@ -209,9 +213,15 @@ export default class EndingManager {
             this.scene.time.delayedCall(2000, () => {
               const end02 = this.scene.children.getByName('currentEndImage');
               this.transitionToImage(end02, 'end_03', () => {
-                // Fade out end_03 and show game scene without owner
+                // Transition to end_04
                 this.scene.time.delayedCall(2000, () => {
-                  this.fadeBackToSceneWithoutOwner();
+                  const end03 = this.scene.children.getByName('currentEndImage');
+                  this.transitionToImage(end03, 'end_04', () => {
+                    // Fade out end_04 and show game scene without owner
+                    this.scene.time.delayedCall(2000, () => {
+                      this.fadeBackToSceneWithoutOwner();
+                    });
+                  });
                 });
               });
             });
@@ -222,18 +232,16 @@ export default class EndingManager {
   }
 
   transitionToImage(currentImage, nextImageKey, onComplete) {
+    // Create next image - full-canvas sized and fixed to camera
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
-    const centerX = this.scene.cameras.main.scrollX + width / 2;
-    const centerY = this.scene.cameras.main.scrollY + height / 2;
 
-    // Create next image
-    const nextImage = this.scene.add.image(centerX, centerY, nextImageKey);
+    const nextImage = this.scene.add.image(width / 2, height / 2, nextImageKey);
     nextImage.setOrigin(0.5, 0.5);
-    nextImage.setDepth(90);
-    nextImage.setScrollFactor(0);
+    nextImage.setScrollFactor(0); // Fixed to camera
+    nextImage.setDepth(5000); // Very high depth to be above everything
     nextImage.setAlpha(0);
-    nextImage.setScale(Math.min(width / nextImage.width, height / nextImage.height));
+    nextImage.setDisplaySize(width, height); // Fit to canvas size
     nextImage.setName('currentEndImage');
 
     // Cross-fade
@@ -328,66 +336,59 @@ export default class EndingManager {
   }
 
   showFinalTextScreen() {
-    const width = this.scene.cameras.main.width;
-    const height = this.scene.cameras.main.height;
-
     // Black background
     this.scene.cameras.main.setBackgroundColor('#000000');
 
-    // Final message
-    const finalText = this.scene.add.text(
-      this.scene.cameras.main.scrollX + width / 2,
-      this.scene.cameras.main.scrollY + height / 2,
-      'Some hearts can be cleaned...\nbut not healed.',
-      {
-        font: 'italic 28px Arial',
-        fill: '#cccccc',
-        align: 'center',
-        lineSpacing: 10
-      }
-    );
-    finalText.setOrigin(0.5, 0.5);
-    finalText.setDepth(3000);
-    finalText.setScrollFactor(0);
-    finalText.setAlpha(0);
+    // Final text screen image - full-canvas sized and fixed to camera
+    const width = this.scene.cameras.main.width;
+    const height = this.scene.cameras.main.height;
 
-    // Fade in final text
+    const finalTextImage = this.scene.add.image(width / 2, height / 2, 'finalTextScreen');
+    finalTextImage.setOrigin(0.5, 0.5);
+    finalTextImage.setScrollFactor(0); // Fixed to camera
+    finalTextImage.setDepth(6000); // High depth for final screen
+    finalTextImage.setAlpha(0);
+    finalTextImage.setDisplaySize(width, height); // Fit to canvas size
+
+    // Fade in final text image
     this.scene.tweens.add({
-      targets: finalText,
+      targets: finalTextImage,
       alpha: 1,
       duration: 3000,
       ease: 'Power2',
       onComplete: () => {
-        // Wait, then show credits/restart option
+        // Wait, then show credits
         this.scene.time.delayedCall(4000, () => {
-          this.showCredits();
+          // Fade out final text
+          this.scene.tweens.add({
+            targets: finalTextImage,
+            alpha: 0,
+            duration: 1500,
+            ease: 'Power2',
+            onComplete: () => {
+              finalTextImage.destroy();
+              this.showCredits();
+            }
+          });
         });
       }
     });
   }
 
   showCredits() {
+    // Credits screen image - full-canvas sized and fixed to camera
     const width = this.scene.cameras.main.width;
     const height = this.scene.cameras.main.height;
 
-    const creditsText = this.scene.add.text(
-      this.scene.cameras.main.scrollX + width / 2,
-      this.scene.cameras.main.scrollY + height / 2 + 100,
-      'After Paws\n\nA game about love, loss, and the fragility of healing.\n\n\nSwara - Character Artist\nSamyak - Environment Artist\nTanisha - Developer\nAbabil - Instructor\n\n\nPress SPACE to restart',
-      {
-        font: '18px Arial',
-        fill: '#888888',
-        align: 'center',
-        lineSpacing: 8
-      }
-    );
-    creditsText.setOrigin(0.5, 0.5);
-    creditsText.setDepth(3000);
-    creditsText.setScrollFactor(0);
-    creditsText.setAlpha(0);
+    const creditsImage = this.scene.add.image(width / 2, height / 2, 'endCreditsScreen');
+    creditsImage.setOrigin(0.5, 0.5);
+    creditsImage.setScrollFactor(0); // Fixed to camera
+    creditsImage.setDepth(6000); // High depth for final screen
+    creditsImage.setAlpha(0);
+    creditsImage.setDisplaySize(width, height); // Fit to canvas size
 
     this.scene.tweens.add({
-      targets: creditsText,
+      targets: creditsImage,
       alpha: 1,
       duration: 2000,
       ease: 'Power2'
@@ -401,7 +402,7 @@ export default class EndingManager {
 
   showEndingDialogue(owner, text, duration, onComplete) {
     const bubble = this.scene.add.container(owner.x, owner.y - 70);
-    bubble.setDepth(100);
+    bubble.setDepth(4500); // Above collapse overlay (4000) but below ending images (5000)
 
     const bubbleBg = this.scene.add.rectangle(0, 0, text.length * 9 + 30, 50, 0xffffff, 0.95);
     bubbleBg.setStrokeStyle(2, 0x333333);

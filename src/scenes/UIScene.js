@@ -9,11 +9,48 @@ export default class UIScene extends Phaser.Scene {
     // Get reference to house scene
     this.houseScene = this.scene.get('HouseScene');
 
+    // Create controls guide (top-right corner)
+    this.createControlsGuide();
+
     // Create taskboard container (hidden by default)
     this.createTaskboard();
 
     // ESC key to close taskboard
     this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  createControlsGuide() {
+    const width = this.cameras.main.width;
+    const padding = 20;
+
+    // Container for controls guide
+    this.controlsContainer = this.add.container(width - padding, padding);
+    this.controlsContainer.setDepth(900); // Below taskboard (1000) but above game elements
+    this.controlsContainer.setScrollFactor(0); // Fixed to camera
+
+    // Semi-transparent background panel
+    const panelWidth = 200;
+    const panelHeight = 100;
+    const controlsBg = this.add.rectangle(0, 0, panelWidth, panelHeight, 0x000000, 0.6);
+    controlsBg.setOrigin(1, 0); // Align to top-right
+    controlsBg.setStrokeStyle(2, 0xffffff, 0.3);
+    this.controlsContainer.add(controlsBg);
+
+    // Controls text
+    const controlsText = this.add.text(-panelWidth + 10, 10,
+      'CONTROLS:\n\n' +
+      'WASD - Move\n' +
+      'E - Interact with tasks\n' +
+      'SPACE - Interact with fridge',
+      {
+        font: '12px monospace',
+        fill: '#ffffff',
+        align: 'left',
+        lineSpacing: 4
+      }
+    );
+    controlsText.setOrigin(0, 0);
+    this.controlsContainer.add(controlsText);
   }
 
   createTaskboard() {

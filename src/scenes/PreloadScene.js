@@ -66,9 +66,12 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('humanBack', 'assets/Human_back.png');
 
     // Load ending sequence images
-    this.load.image('end_01', 'assets/end_01.webp');
-    this.load.image('end_02', 'assets/end_02.webp');
-    this.load.image('end_03', 'assets/end_03.webp');
+    this.load.image('end_01', 'assets/end_01.png');
+    this.load.image('end_02', 'assets/end_02.png');
+    this.load.image('end_03', 'assets/end_03.png');
+    this.load.image('end_04', 'assets/end_04.png');
+    this.load.image('finalTextScreen', 'assets/Final_Text_Screen.png');
+    this.load.image('endCreditsScreen', 'assets/end_credits_screen.png');
 
     // Load background music
     this.load.audio('bgMusic', 'music/happy-relaxing-loop-275536.mp3');

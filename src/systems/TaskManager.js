@@ -7,7 +7,7 @@ export default class TaskManager {
       {
         id: 'makeBed',
         name: 'Make the bed',
-        description: 'Straighten the bed and sheets in the bedroom.',
+        description: 'Straighten the bed and sheets.\nLocation: Bedroom',
         requiredItemKey: 'bedMessy',
         interactionObject: 'bed',
         targetLocation: { x: 261, y: 244 },
@@ -23,7 +23,7 @@ export default class TaskManager {
       {
         id: 'pickUpClothes',
         name: 'Pick up clothes',
-        description: 'Gather scattered clothes from the bedroom floor.',
+        description: 'Gather scattered clothes from the floor.\nLocation: Bedroom',
         requiredItemKey: 'clothes',
         interactionObject: 'wardrobe',
         targetLocation: { x: 564, y: 29 },
@@ -38,7 +38,7 @@ export default class TaskManager {
       {
         id: 'organizeBooks',
         name: 'Organize books',
-        description: 'Put books back on the shelf properly.',
+        description: 'Put books back on the shelf properly.\nLocation: Bedroom',
         requiredItemKey: 'books',
         interactionObject: 'books1',
         targetLocation: { x: 771, y: 319 },
@@ -53,7 +53,7 @@ export default class TaskManager {
       {
         id: 'sweepFloor',
         name: 'Sweep the floor',
-        description: 'Clean up the dirt and dust from living room floor.',
+        description: 'Clean up the dirt and dust from floor.\nLocation: Living Room',
         requiredItemKey: 'broom',
         interactionObject: 'table1',
         targetLocation: { x: 1351, y: 290 },
@@ -69,7 +69,7 @@ export default class TaskManager {
       {
         id: 'wipeTable',
         name: 'Wipe the table',
-        description: 'Clean the dirty coffee table in living room.',
+        description: 'Clean the dirty coffee table.\nLocation: Living Room',
         requiredItemKey: 'dirtyTableSplotches',
         interactionObject: 'table2_chips',
         targetLocation: { x: 1216, y: 1038 },
@@ -84,7 +84,7 @@ export default class TaskManager {
       {
         id: 'throwAwayChips',
         name: 'Throw away chips',
-        description: 'Clean up empty chip bags and trash.',
+        description: 'Clean up empty chip bags and trash.\nLocation: Kitchen',
         requiredItemKey: 'chips',
         interactionObject: 'table2_chips',
         targetLocation: { x: 1216, y: 1038 },
@@ -99,7 +99,7 @@ export default class TaskManager {
       {
         id: 'washDishes',
         name: 'Wash dishes',
-        description: 'Clean the dirty plates and utensils in the kitchen.',
+        description: 'Clean the dirty plates and utensils.\nLocation: Kitchen',
         requiredItemKey: 'plates',
         interactionObject: 'stove2',
         targetLocation: { x: 846, y: 911 },
@@ -115,7 +115,7 @@ export default class TaskManager {
       {
         id: 'takeOutTrash',
         name: 'Take out trash',
-        description: 'Remove boxes and garbage from the kitchen.',
+        description: 'Remove boxes and garbage.\nLocation: Kitchen',
         requiredItemKey: 'boxes',
         interactionObject: 'boxes1',
         targetLocation: { x: 1857, y: 285 },
